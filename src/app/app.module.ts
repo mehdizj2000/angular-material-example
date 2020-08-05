@@ -1,5 +1,7 @@
+import { AuthInterceptor } from './shared/okta/auth.interceptor';
+import { OktaAuthModule, OKTA_CONFIG } from '@okta/okta-angular';
 import { SharedModule } from './shared/shared.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MaterialModule } from './material/material.module';
 import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -14,6 +16,13 @@ import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.com
 import { HeaderComponent } from './navigation/header/header.component';
 import { NotFoundComponent } from './error-pages/not-found/not-found.component';
 import { ServerErrorComponent } from './error-pages/server-error/server-error.component';
+
+const oktaConfig = {
+  issuer: 'https://dev-647801.okta.com/oauth2/default',
+  redirectUri: window.location.origin + '/callback',
+  clientId: '0oan1fmwqh8Ql8aPe4x6',
+  scopes: ['openid', 'profile']
+};
 
 @NgModule({
   declarations: [
@@ -31,9 +40,13 @@ import { ServerErrorComponent } from './error-pages/server-error/server-error.co
     BrowserAnimationsModule,
     HammerModule,
     SharedModule,
-    HttpClientModule
+    HttpClientModule,
+    OktaAuthModule
   ],
-  providers: [],
+  providers: [
+    { provide: OKTA_CONFIG, useValue: oktaConfig },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
