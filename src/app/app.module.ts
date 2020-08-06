@@ -1,3 +1,4 @@
+import { AuthGuardService } from './root-guard/auth-guard.service';
 import { AuthInterceptor } from './shared/okta/auth.interceptor';
 import { OktaAuthModule, OKTA_CONFIG } from '@okta/okta-angular';
 import { SharedModule } from './shared/shared.module';
@@ -21,7 +22,8 @@ const oktaConfig = {
   issuer: 'https://dev-647801.okta.com/oauth2/default',
   redirectUri: window.location.origin + '/callback',
   clientId: '0oan1fmwqh8Ql8aPe4x6',
-  scopes: ['openid', 'profile']
+  scopes: ['openid', 'profile', 'email'],
+  pkce: true
 };
 
 @NgModule({
@@ -44,6 +46,7 @@ const oktaConfig = {
     OktaAuthModule
   ],
   providers: [
+    AuthGuardService,
     { provide: OKTA_CONFIG, useValue: oktaConfig },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
